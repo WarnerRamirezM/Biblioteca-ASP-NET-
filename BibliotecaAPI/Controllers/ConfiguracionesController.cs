@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace BibliotecaAPI.Controllers
 {
@@ -9,13 +10,22 @@ namespace BibliotecaAPI.Controllers
         private readonly IConfiguration configuration;
         private readonly IConfigurationSection seccion01;
         private readonly IConfigurationSection seccion02;
+        private readonly PersonaOpciones _opcionesPersona;
 
-        public ConfiguracionesController(IConfiguration configuration)
+        public ConfiguracionesController(IConfiguration configuration, IOptionsSnapshot<PersonaOpciones> opcionesPersona)
         {
             this.configuration = configuration;
             seccion01 = configuration.GetSection("seccion_1");
             seccion02 = configuration.GetSection("seccion_2");
+            _opcionesPersona = opcionesPersona.Value;
         }
+        [HttpGet("seccion1_opciones")]
+        public ActionResult GetSeccion1Opciones()
+        {
+            return Ok(_opcionesPersona);
+        }
+
+
 
         [HttpGet("seccion01")]
         public IActionResult GetSeccion01()
