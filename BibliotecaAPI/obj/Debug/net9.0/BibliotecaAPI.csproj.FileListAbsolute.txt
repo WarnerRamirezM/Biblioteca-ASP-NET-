@@ -151,3 +151,8 @@ C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASP
 C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\obj\Debug\net9.0\BibliotecaAPI.genruntimeconfig.cache
 C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\obj\Debug\net9.0\ref\BibliotecaAPI.dll
 C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\bin\Debug\net9.0\AutoMapper.dll
+C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\obj\Debug\net9.0\BibliotecaAPI.sourcelink.json
+C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\bin\Debug\net9.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\Asus\Desktop\CSHART\C# Udemy ApiRest ASP.NET Core 9\CursoRestFullApiASPNETCore Continuidad\Modulo 5 - Manipulacion de Recursos\Inicio\BibliotecaAPI\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
