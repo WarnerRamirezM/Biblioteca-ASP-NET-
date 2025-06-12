@@ -1,10 +1,12 @@
 ﻿using BibliotecaAPI.Entidades;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
 namespace BibliotecaAPI.Datos
 {
-    public class ApplicationDbContext : DbContext
+    //se hereda de identity para tener las tablas 
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
