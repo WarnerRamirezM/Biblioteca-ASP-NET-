@@ -2,6 +2,7 @@
 using BibliotecaAPI.Datos;
 using BibliotecaAPI.DTO;
 using BibliotecaAPI.Entidades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/libros/{libroId:int}/comentarios")] //para acceder a los comentarios 
+    [Authorize] //proteccion de acciones
     public class ComentarioController: ControllerBase
     {
         private readonly ApplicationDbContext context;

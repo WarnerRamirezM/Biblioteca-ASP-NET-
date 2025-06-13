@@ -3,6 +3,7 @@ using Azure;
 using BibliotecaAPI.Datos;
 using BibliotecaAPI.DTO;
 using BibliotecaAPI.Entidades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/autores")]
+    [Authorize]
     public class AutoresController: ControllerBase
     {
         private readonly ApplicationDbContext context; //campo de clase para poder acceder en toda la clase
@@ -22,6 +24,7 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous] //permite utilizar este endpoint independientemente del authorize 
         public async Task<IEnumerable<AutorDTO>> Get()
         {
             var autores = await context.Autores.ToListAsync();
