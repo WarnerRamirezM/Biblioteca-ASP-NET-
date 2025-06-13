@@ -164,26 +164,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "BibliotecaAPI.Controllers.ConfiguracionesController",
-    "Method": "Get",
-    "RelativePath": "api/configuraciones",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.String",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
     "ContainingType": "BibliotecaAPI.Controllers.LibrosController",
     "Method": "Get",
     "RelativePath": "api/libros",
@@ -408,5 +388,31 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BibliotecaAPI.Controllers.UsuariosController",
+    "Method": "Registrar",
+    "RelativePath": "api/usuarios/registro",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "credencialesUsuarioDTO",
+        "Type": "BibliotecaAPI.DTO.CredencialesUsuarioDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BibliotecaAPI.DTO.RespuestaAutenticacionDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]
