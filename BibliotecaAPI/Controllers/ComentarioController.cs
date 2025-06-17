@@ -2,6 +2,7 @@
 using BibliotecaAPI.Datos;
 using BibliotecaAPI.DTO;
 using BibliotecaAPI.Entidades;
+using BibliotecaAPI.Servicios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,13 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IServiciosUsuarios serviciosUsuarios;
 
-        public ComentarioController(ApplicationDbContext context, IMapper mapper) //control . create and asing fields
+        public ComentarioController(ApplicationDbContext context, IMapper mapper, IServiciosUsuarios serviciosUsuarios) //control . create and asing fields
         {
             this.context = context;
             this.mapper = mapper;
+            this.serviciosUsuarios = serviciosUsuarios;
         }
 
         [HttpGet]
@@ -61,10 +64,17 @@ namespace BibliotecaAPI.Controllers
             {
                 return NotFound();
             }
+            var usuario = await serviciosUsuarios.ObtenerUsuario();
+            if (usuario is null)
+            {
+                return NotFound();
+            }
+
             //si el libro existe insertamos el comentario
             var comentario = mapper.Map<Comentario>(comentarioCreacionDTO); //mapeamos un comentarioCreacionDTO a un ComentarioDDBB de la base de datos
             comentario.LibroId = libroId; //asignamos el Id del libro al comentario
             comentario.FechaPublicacion = DateTime.UtcNow;
+            comentario.UsuarioId = usuario.Id; //asignamos el id del usuario 
             context.Add(comentario); //insertamos el comentario 
             context.SaveChanges(); //actualizamos la base de datos con el comentario guardado
 
@@ -85,13 +95,23 @@ namespace BibliotecaAPI.Controllers
             {
                 return NotFound();
             }
+            var usuario = await serviciosUsuarios.ObtenerUsuario();
+            if (usuario is null)
+            {
+                return NotFound();
+            }
+            //el usuario que escribio el comentario es el unico que puede editar su mismo comentario
+
 
             var comentarioDB = await context.Comentarios.FirstOrDefaultAsync(x => x.Id == id); // Se busca en la base de datos el autor con el ID especificado
             if (comentarioDB == null)
             { // Si no se encuentra ningún autor con ese ID...
                 return NotFound(); // ...se retorna un error 404 (Not Found)
             }
-
+            if(comentarioDB.UsuarioId != usuario.Id) //si el usuario del comentario es distinto al usuario 
+            { 
+                return Forbid(); //retorna un forbid o prohibido.
+            }
             var comentarioPatchDTO = mapper.Map<ComentarioPatchDTO>(comentarioDB); // Se mapea el comentario de la base de datos a un DTO que puede recibir el patch
 
             patchDoc.ApplyTo(comentarioPatchDTO, ModelState); // Se aplican los cambios del documento patch al DTO, y se registra cualquier error en ModelState
@@ -118,11 +138,25 @@ namespace BibliotecaAPI.Controllers
             {
                 return NotFound();
             }
-            var registrosBorrados = await context.Comentarios.Where(x => x.Id == id).ExecuteDeleteAsync(); //buscamos los registros del comentarios ddbb
-            if(registrosBorrados == 0) //si no encontro registros
+            //verificacion del usuario 
+            var usuario = await serviciosUsuarios.ObtenerUsuario();
+            if (usuario is null)
             {
                 return NotFound();
             }
+            //un usuario solo puede borrar su propio comentario
+            var comentarioDB = await context.Comentarios.FirstOrDefaultAsync(x => x.Id == id);
+            if (comentarioDB is null)
+            {
+                return NotFound();
+            }
+            if(comentarioDB.Usuario.Id != usuario.Id)
+            {
+                return Forbid();
+            }
+            context.Remove(comentarioDB); //se marca la entidad para ser borrado cuando se haga un savechange
+            context.SaveChanges(); //borrado
+
             return NoContent(); //De lo contrario un nonContent
 
         }
