@@ -155,7 +155,7 @@ namespace BibliotecaAPI.Controllers
                 return Forbid();
             }
             context.Remove(comentarioDB); //se marca la entidad para ser borrado cuando se haga un savechange
-            context.SaveChanges(); //borrado
+            await context.SaveChangesAsync(); //borrado
 
             return NoContent(); //De lo contrario un nonContent
 

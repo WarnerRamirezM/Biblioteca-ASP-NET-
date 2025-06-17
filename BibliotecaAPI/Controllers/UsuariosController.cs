@@ -1,4 +1,5 @@
 ﻿using BibliotecaAPI.DTO;
+using BibliotecaAPI.Servicios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +18,17 @@ namespace BibliotecaAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IServiciosUsuarios serviciosUsuarios;
 
         //clase para la autenticacion 
         public UsuariosController(UserManager<IdentityUser> userManager, IConfiguration configuration, 
-            SignInManager<IdentityUser> signInManager) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
+            SignInManager<IdentityUser> signInManager, IServiciosUsuarios serviciosUsuarios) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
         {
 
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.serviciosUsuarios = serviciosUsuarios;
         }
 
         [HttpPost("registro")]
@@ -56,6 +59,22 @@ namespace BibliotecaAPI.Controllers
 
 
         }
+        [HttpGet("renovar-token")]
+        public async Task<ActionResult<RespuestaAutenticacionDTO>> RenovarToken()
+        {
+            var usuario = await serviciosUsuarios.ObtenerUsuario();
+            if(usuario is null)
+            {
+                return NotFound();
+            }
+            var credencialesUsuarioDTO = new CredencialesUsuarioDTO { Email = usuario.Email! }; //se le manda el email del usuario por es el que se necesita de claim
+            var respuestaAutenticacion = await ConstruirToken(credencialesUsuarioDTO); //mandamos las credenciales a la creacion del token
+            return respuestaAutenticacion;
+
+        }
+
+
+
         //El siguiente metodo loguea el usuario
         [HttpPost("login")]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Login(
