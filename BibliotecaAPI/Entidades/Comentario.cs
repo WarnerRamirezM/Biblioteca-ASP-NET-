@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BibliotecaAPI.Entidades
 {
@@ -9,6 +10,9 @@ namespace BibliotecaAPI.Entidades
         public DateTime FechaPublicacion { get; set; }
         public int LibroId { get; set; }
         public Libro? Libro { get; set; } //configuracion 1 a muchos DEPENDIENTE donde el comentario DEPENDE de un LIBRO
-        
+        //crear relacion entre comentario y usuario
+        public required string UsuarioId { get; set; } //obligatorio
+        //propiedad de navegacion 
+        public IdentityUser? Usuario { get; set; }
     }
 }

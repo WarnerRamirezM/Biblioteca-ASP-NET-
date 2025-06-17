@@ -31,8 +31,9 @@ namespace BibliotecaAPI.Controllers
             {
                 return NotFound(); //si no existe, retorna no encontrado
             }
-            //si el libro existe continuamos
+            //si el libro existe continuamos y traemos la data relacionada con el usuario 
             var comentarios = await context.Comentarios
+                .Include(x => x.Usuario) //datos del usuario incluidos
                 .Where(x => x.LibroId == libroId)
                 .OrderByDescending(x => x.FechaPublicacion)
                 .ToListAsync();
@@ -41,7 +42,9 @@ namespace BibliotecaAPI.Controllers
         [HttpGet("{id}", Name = "ObtenerComentario")]
         public async Task<ActionResult<ComentarioDTO>> Get(Guid id)
         {
-            var comentario = await context.Comentarios.FirstOrDefaultAsync(x => x.Id == id); //devolvemos segun el id encontrado en ComentarioDDBB
+            var comentario = await context.Comentarios
+                                    .Include (x => x.Usuario) //incluimos la data del usuario
+                                    .FirstOrDefaultAsync(x => x.Id == id); //devolvemos segun el id encontrado en ComentarioDDBB
             if(comentario is null) //si el comentario no existe devolvemos no encontrado
             {
                 return NotFound();

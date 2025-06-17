@@ -16,12 +16,16 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly SignInManager<IdentityUser> signInManager;
 
         //clase para la autenticacion 
-        public UsuariosController(UserManager<IdentityUser> userManager, IConfiguration configuration) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
+        public UsuariosController(UserManager<IdentityUser> userManager, IConfiguration configuration, 
+            SignInManager<IdentityUser> signInManager) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
         {
+
             this.userManager = userManager;
             this.configuration = configuration;
+            this.signInManager = signInManager;
         }
 
         [HttpPost("registro")]
@@ -51,6 +55,34 @@ namespace BibliotecaAPI.Controllers
             }
 
 
+        }
+        //El siguiente metodo loguea el usuario
+        [HttpPost("login")]
+        public async Task<ActionResult<RespuestaAutenticacionDTO>> Login(
+            CredencialesUsuarioDTO credencialesUsuarioDTO)
+        {
+            var usuario = await userManager.FindByEmailAsync(credencialesUsuarioDTO.Email); //busqueda por email 
+            if(usuario is null)
+            {
+                return RetornarLoginIncorrecto();
+            }
+            var resultado = await signInManager.CheckPasswordSignInAsync(usuario,
+                credencialesUsuarioDTO.Password!, lockoutOnFailure: false);
+            if (resultado.Succeeded)
+            {
+                return await ConstruirToken(credencialesUsuarioDTO);
+            }
+            else
+            {
+                return RetornarLoginIncorrecto();
+            }
+
+        }
+        //metodo para retornar un msj de error cuando el login es incorrecto por el email 
+        private ActionResult RetornarLoginIncorrecto()
+        {
+            ModelState.AddModelError(string.Empty, "Login incorrecto");
+            return ValidationProblem();
         }
         private async Task<RespuestaAutenticacionDTO> ConstruirToken(CredencialesUsuarioDTO credencialesUsuarioDTO)
         {
