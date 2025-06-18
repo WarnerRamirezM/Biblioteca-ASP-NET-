@@ -1,4 +1,5 @@
 ﻿using BibliotecaAPI.DTO;
+using BibliotecaAPI.Entidades;
 using BibliotecaAPI.Servicios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,14 +16,14 @@ namespace BibliotecaAPI.Controllers
    
     public class UsuariosController: ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<Usuario> userManager;
         private readonly IConfiguration configuration;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly SignInManager<Usuario> signInManager;
         private readonly IServiciosUsuarios serviciosUsuarios;
 
         //clase para la autenticacion 
-        public UsuariosController(UserManager<IdentityUser> userManager, IConfiguration configuration, 
-            SignInManager<IdentityUser> signInManager, IServiciosUsuarios serviciosUsuarios) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
+        public UsuariosController(UserManager<Usuario> userManager, IConfiguration configuration, 
+            SignInManager<Usuario> signInManager, IServiciosUsuarios serviciosUsuarios) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
         {
 
             this.userManager = userManager;
@@ -37,7 +38,7 @@ namespace BibliotecaAPI.Controllers
         //https://localhost:7194/api/usuarios/registro
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Registrar(CredencialesUsuarioDTO credencialesUsuarioDTO)
         {
-            var usuario = new IdentityUser
+            var usuario = new Usuario
             {
                 UserName = credencialesUsuarioDTO.Email, //nombre de usuario 
                 Email = credencialesUsuarioDTO.Email //y el correo 
@@ -99,7 +100,19 @@ namespace BibliotecaAPI.Controllers
             return NoContent();
 
         }
-
+        [HttpPut]
+        [Authorize]
+        public async Task<ActionResult> Put(ActualizarUsuarioDTO actualizarUsuarioDTO)
+        {
+            var usuario = await serviciosUsuarios.ObtenerUsuario();
+            if(usuario is null)
+            {
+                return NotFound();
+            }
+            usuario.FechaNacimiento = actualizarUsuarioDTO.FechaNacimiento;
+            await userManager.UpdateAsync(usuario);
+            return NoContent();
+        }
 
         //El siguiente metodo loguea el usuario
         [HttpPost("login")]

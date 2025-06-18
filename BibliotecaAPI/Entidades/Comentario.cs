@@ -13,6 +13,6 @@ namespace BibliotecaAPI.Entidades
         //crear relacion entre comentario y usuario
         public required string UsuarioId { get; set; } //obligatorio
         //propiedad de navegacion 
-        public IdentityUser? Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
     }
 }

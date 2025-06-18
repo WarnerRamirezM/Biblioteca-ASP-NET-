@@ -6,7 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 namespace BibliotecaAPI.Datos
 {
     //se hereda de identity para tener las tablas 
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<Usuario>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
