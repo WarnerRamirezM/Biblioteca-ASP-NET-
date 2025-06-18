@@ -1,9 +1,12 @@
-﻿using BibliotecaAPI.DTO;
+﻿using AutoMapper;
+using BibliotecaAPI.Datos;
+using BibliotecaAPI.DTO;
 using BibliotecaAPI.Entidades;
 using BibliotecaAPI.Servicios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,16 +23,31 @@ namespace BibliotecaAPI.Controllers
         private readonly IConfiguration configuration;
         private readonly SignInManager<Usuario> signInManager;
         private readonly IServiciosUsuarios serviciosUsuarios;
+        private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
         //clase para la autenticacion 
         public UsuariosController(UserManager<Usuario> userManager, IConfiguration configuration, 
-            SignInManager<Usuario> signInManager, IServiciosUsuarios serviciosUsuarios) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
+            SignInManager<Usuario> signInManager, IServiciosUsuarios serviciosUsuarios,
+            ApplicationDbContext context, IMapper mapper) //para crear un usuario, y configuration para acceder a valores de un proveedor de configuracion 
         {
 
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
             this.serviciosUsuarios = serviciosUsuarios;
+            this.context = context;
+            this.mapper = mapper;
+        }
+        [HttpGet]
+        [Authorize(Policy = "esadmin")]
+        public async Task<IEnumerable<UsuarioDTO>> Get()
+        {
+            var usuarios = await context.Users.ToListAsync(); //obtenemos la lista de usuarios
+            var usuarioDTO = mapper.Map<IEnumerable<UsuarioDTO>>(usuarios); //mapeo 
+            return usuarioDTO;
+
+
         }
 
         [HttpPost("registro")]
