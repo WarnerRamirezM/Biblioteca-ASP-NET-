@@ -10,7 +10,8 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/libros")]
-    [Authorize]
+    //la politica obliga al claim jtw : "esadmin" -> program. builder.Services.AddAuthorization
+    [Authorize(Policy = "esadmin")] //proteger todas las acciones con ciertas credenciales (login,administrador..)
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDbContext context;

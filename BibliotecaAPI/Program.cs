@@ -36,6 +36,14 @@ builder.Services.AddAuthentication().AddJwtBearer(opciones =>
 
     };
 });
+//politica de autorizacion
+builder.Services.AddAuthorization(opciones =>
+{
+    opciones.AddPolicy("esadmin", politica => politica.RequireClaim("esadmin")); //se crea una politica que necesita tener un claim 
+    //se pueden crear tantas politicas como quiera..
+}
+
+);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

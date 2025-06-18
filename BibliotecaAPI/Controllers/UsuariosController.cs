@@ -12,7 +12,7 @@ namespace BibliotecaAPI.Controllers
 {
     [ApiController]
     [Route("api/usuarios")]
-    [Authorize]
+   
     public class UsuariosController: ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -32,7 +32,7 @@ namespace BibliotecaAPI.Controllers
         }
 
         [HttpPost("registro")]
-        [AllowAnonymous]
+       // [AllowAnonymous]
         //Devolvemos la respuesta y mandamos como parametros los valores necesarios para la autenticacion 
         //https://localhost:7194/api/usuarios/registro
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Registrar(CredencialesUsuarioDTO credencialesUsuarioDTO)
@@ -60,6 +60,7 @@ namespace BibliotecaAPI.Controllers
 
         }
         [HttpGet("renovar-token")]
+        [Authorize]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> RenovarToken()
         {
             var usuario = await serviciosUsuarios.ObtenerUsuario();
@@ -72,7 +73,32 @@ namespace BibliotecaAPI.Controllers
             return respuestaAutenticacion;
 
         }
+        [HttpPost("hacer-admin")]
+        [Authorize(Policy = "esadmin")]
+        public async Task<ActionResult> HacerAdmin(EditarClaimDTO editarClaimDTO)
+        {
+            var usuario = await userManager.FindByEmailAsync(editarClaimDTO.Email);
+            if(usuario is null)
+            {
+                return NotFound();
+            }
+            await userManager.AddClaimAsync(usuario, new Claim("esadmin", "true")); //creamos un nuevo claim para el usuario 
+            return NoContent();
 
+        }
+        [HttpPost("remover-admin")]
+        [Authorize(Policy = "esadmin")]
+        public async Task<ActionResult> RemoverAdmin(EditarClaimDTO editarClaimDTO)
+        {
+            var usuario = await userManager.FindByEmailAsync(editarClaimDTO.Email);
+            if (usuario is null)
+            {
+                return NotFound();
+            }
+            await userManager.RemoveClaimAsync(usuario, new Claim("esadmin", "true")); //creamos un nuevo claim para el usuario 
+            return NoContent();
+
+        }
 
 
         //El siguiente metodo loguea el usuario
