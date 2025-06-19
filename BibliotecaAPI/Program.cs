@@ -19,14 +19,17 @@ builder.Services.AddIdentityCore<Usuario>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<UserManager<Usuario>>();
 builder.Services.AddScoped<SignInManager<Usuario>>();
-builder.Services.AddTransient<IServiciosUsuarios, ServiciosUsuarios>(); 
+builder.Services.AddTransient<IServiciosUsuarios, ServiciosUsuarios>();
 //configurar cors
 builder.Services.AddCors(opciones =>
 {
     opciones.AddDefaultPolicy(opcionesCORS =>
     {
-        opcionesCORS.WithOrigins(origenesPermitidos).AllowAnyMethod().AllowAnyHeader(); //permite cualquier origen, metodo y cabecera
-    });
+        opcionesCORS.WithOrigins(origenesPermitidos).AllowAnyMethod().AllowAnyHeader() //permite cualquier origen, metodo y cabecera
+                                 .WithExposedHeaders("mi-cabecera"); //esto expone las cabeceras pasadas por el CORS
+
+
+        });
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -61,6 +64,10 @@ var app = builder.Build();
 
 // área de middlewares
 //indicar que queremos utilizar cors
+app.Use(async (contexto, next) => {
+    contexto.Response.Headers.Append("mi-cabecera", "valor");
+    await next();
+});
 app.UseCors();
 app.MapControllers();
 
