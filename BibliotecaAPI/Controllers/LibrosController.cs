@@ -3,6 +3,7 @@ using BibliotecaAPI.Datos;
 using BibliotecaAPI.DTO;
 using BibliotecaAPI.Entidades;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +17,46 @@ namespace BibliotecaAPI.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
-        public LibrosController(ApplicationDbContext context, IMapper mapper) //inyeccion de automaper
+        private readonly ITimeLimitedDataProtector protectorLimitadoPorTiempo;
+
+        public LibrosController(ApplicationDbContext context, IMapper mapper,
+            IDataProtectionProvider protectionProvider) //inyeccion de automaper
         {
             this.context = context;
             this.mapper = mapper;
+            protectorLimitadoPorTiempo = protectionProvider.CreateProtector("LibrosController").ToTimeLimitedDataProtector();
         }
-
+        [HttpGet("listado/obtenerToken")]
+        public ActionResult ObtenerTokenListado()
+        {
+            var textoPlano = Guid.NewGuid().ToString(); //Cremos un texto guid
+            var token = protectorLimitadoPorTiempo.Protect(textoPlano, lifetime: TimeSpan.FromSeconds(30)); //ciframos el token limitado por tiempo
+            var url = Url.RouteUrl("ObtenerListadoLibrosUsandoToken", new { token }, "https"); //creamos la ruta completa y pasamos el token
+            return Ok(new { url });
+        }
+        //puede ser utilizado por cualquier persona que tenga el token
+        [HttpGet("Listado/{token}", Name = "ObtenerListadoLibrosUsandoToken")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ObtenerListadoUsandoToken(string token)
+        {
+            //valimos el token de manera string pasado por parametros para no buscarlo en la base de datos 
+            //permitiendo ser mas escalable
+            try
+            {
+                //si marca un error el try el token se encuentra desprotegido
+                protectorLimitadoPorTiempo.Unprotect(token);
+            }
+            catch (Exception)
+            {
+                //manda el error
+                ModelState.AddModelError(nameof(token), "El token ha expirado");
+                return ValidationProblem();
+            }
+            var libros = await context.Libros.ToListAsync();
+            var libroDTO = mapper.Map<IEnumerable<LibroDTO>>(libros);
+            return Ok(libroDTO);
+        }
+             
         [HttpGet]
         public async Task<IEnumerable<LibroDTO>> Get()
         {
