@@ -11,6 +11,8 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // área de servicios
+//proteccion de datos 
+builder.Services.AddDataProtection(); 
 var origenesPermitidos = builder.Configuration.GetSection("origenesPermitidos").Get<string[]>()!; //obtenido del appsetting.dev.json para obtener los dominios permitidos
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers().AddNewtonsoftJson();
