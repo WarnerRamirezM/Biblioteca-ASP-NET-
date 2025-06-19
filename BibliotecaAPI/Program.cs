@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // área de servicios
+var origenesPermitidos = builder.Configuration.GetSection("origenesPermitidos").Get<string[]>()!; //obtenido del appsetting.dev.json para obtener los dominios permitidos
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddIdentityCore<Usuario>()
@@ -19,7 +20,14 @@ builder.Services.AddIdentityCore<Usuario>()
 builder.Services.AddScoped<UserManager<Usuario>>();
 builder.Services.AddScoped<SignInManager<Usuario>>();
 builder.Services.AddTransient<IServiciosUsuarios, ServiciosUsuarios>(); 
-
+//configurar cors
+builder.Services.AddCors(opciones =>
+{
+    opciones.AddDefaultPolicy(opcionesCORS =>
+    {
+        opcionesCORS.WithOrigins(origenesPermitidos).AllowAnyMethod().AllowAnyHeader(); //permite cualquier origen, metodo y cabecera
+    });
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication().AddJwtBearer(opciones =>
@@ -52,7 +60,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var app = builder.Build();
 
 // área de middlewares
-
+//indicar que queremos utilizar cors
+app.UseCors();
 app.MapControllers();
 
 app.Run();

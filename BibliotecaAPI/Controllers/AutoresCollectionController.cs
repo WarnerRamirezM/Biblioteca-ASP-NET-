@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaAPI.Controllers
 {
+    //para desloguearse solamente se le borra el jwt 
     [ApiController]
     [Route("api/autores-coleccion")]
     //la politica obliga al claim jtw : "esadmin" -> program. builder.Services.AddAuthorization
